@@ -1,0 +1,26 @@
+<div class="liveness-panel">
+    <div #livenessCheckAnimation [ngClass]="{'liveness-check-animation': true, 'liveness-hidden': !livenessSessionRunning}"></div>
+
+    <video #livenessVideo [ngClass]="{'liveness-video': true}" autoplay playsinline></video>
+    <div #livenessVideoOverlay class="liveness-video-overlay">
+        <div class="liveness-video-overlay-content">
+            <div #livenessPointAnimation [ngClass]="{'liveness-point-animation': true, 'liveness-hidden': livenessMode=='mask' || !livenessSessionRunning, 'liveness-point-animation-left': livenessInstruction == 'left-profile-face', 'liveness-point-animation-right': livenessInstruction == 'right-profile-face'}"></div>
+            <div #livenessMaskAnimation [ngClass]="{'liveness-mask-animation': true, 'liveness-hidden': livenessMode=='point' || !livenessSessionRunning || livenessStatus >= 300}"></div>
+            <ng-container *ngIf="livenessSessionRunning">
+                <app-liveness-marquee [ngClass]="{'liveness-hidden': livenessMode=='mask' && livenessStatus < 400}" [active]="livenessStatus < 400"></app-liveness-marquee>
+            </ng-container>
+        </div>
+    </div>
+
+    <canvas #livenessCanvas style="display: none;"></canvas>
+    <canvas #livenessPictureCanvas style="display: none;"></canvas>
+    <div *ngIf="livenessStatusMessage != null"  class="liveness-instructions-container">
+        <p class="liveness-instructions">{{ livenessStatusMessage }}</p>
+    </div>
+
+    <div *ngIf="!livenessDebugMode && livenessSessionRunning && livenessInstructionsRemaining > 0" class="liveness-instructions-counter">{{ livenessInstructionsRemaining }}</div>
+
+    <div *ngIf="!livenessSessionRunning && isLivenessInitialized()" class="liveness-buttons-wrapper">
+        <button class="liveness-start-button" (click)="startLivenessSession()">INICIAR</button>
+    </div>
+</div>

@@ -1,0 +1,119 @@
+$controlsSize: 74px;
+$snapshotButtonSize: 50px;
+
+:host {
+    width: 100%;
+    height: 100%;
+
+    .camera {
+        display: none;
+
+        &.camera-open {
+            display: block;
+            z-index: 10000;
+            position: fixed;
+        }
+
+        .camera-native {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            visibility: hidden;
+
+            canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
+            }
+        }
+
+        .camera-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: #000000;
+
+            .camera-video-wrapper {
+                box-sizing: border-box;
+                position: absolute;
+                top: 0;
+                left: 0;
+
+                .camera-video {
+                    box-sizing: border-box;
+                    position: relative;
+                    top: 0;
+                    left: 0;
+                    right: 100%;
+                    height: 100%;
+                    overflow: hidden;
+
+                    canvas, video {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        height: 100%;
+                        width: 100%;
+                    }
+
+                    video {
+                        object-fit: cover;
+                    }
+                }
+            }
+
+            .camera-controls {
+                box-sizing: border-box;
+                position: absolute;
+                background: black;
+
+                .snapshotButton {
+                    position: absolute;
+                    top: calc(50% - #{$snapshotButtonSize / 2});
+                    left: calc(50% - #{$snapshotButtonSize / 2});
+                    width: $snapshotButtonSize;
+                    height: $snapshotButtonSize;
+                    background: url('camera.svg') center no-repeat;
+                    background-size: 80%;
+                    border-radius: 80%;
+                    background-color: dimgray;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (orientation: portrait) {
+    .camera-video-wrapper {
+        bottom: $controlsSize;
+        width: 100%;
+    }
+
+    .camera-controls {
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: $controlsSize;
+    }
+}
+
+@media screen and (orientation: landscape) {
+    .camera-video-wrapper {
+        right: $controlsSize;
+        height: 100%;
+    }
+
+    .camera-controls {
+        top: 0;
+        right: 0;
+        width: $controlsSize;
+        height: 100%;
+    }
+}

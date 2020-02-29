@@ -1,0 +1,149 @@
+:host {
+
+    .liveness-panel {
+        background: white;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+
+        .liveness-hidden {
+            display: none !important;
+        }
+
+        .liveness-check-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+        }
+
+        .liveness-video {
+            position: absolute;
+            display: block;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background: transparent;
+            pointer-events: none;
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+            z-index: 500;
+        }
+
+        .liveness-instructions-container {
+            display: table;
+            position: absolute;
+            text-align: center;
+            width: 80%;
+            z-index: 2500;
+            top: 30px;
+            left: 10%;
+
+            .liveness-instructions {
+                font-family: 'Roboto', sans-serif;
+                color: white;
+                background-color: rgba(12, 28, 65, 0.8);
+                text-shadow: 1px 1px #000000;
+                font-size: 16px;
+                border-radius: 8px;
+                max-width: 300px;
+                margin: 0 auto;
+                padding: 12px;
+            }
+        }
+
+        .liveness-video-overlay {
+            position: absolute;
+            z-index: 1400;
+
+            .liveness-video-overlay-content {
+                position: relative;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+
+                .liveness-point-animation {
+                    position: absolute;
+                    left: 42%;
+                    top: 50%;
+                    width: 16%;
+                    height: 16%;
+                    z-index: 2000;
+                    transition: all 0.7s ease-out;
+
+                    &.liveness-point-animation-left {
+                        left: 21% !important;
+                    }
+
+                    &.liveness-point-animation-right {
+                        left: 63% !important;
+                    }
+                }
+
+                .liveness-mask-animation {
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                }
+
+                app-liveness-marquee {
+                    position: absolute;
+                    z-index: 1500;
+                    left: 18%;
+                    top: 5%;
+                    right: 18%;
+                    bottom: 5%;
+                }
+            }
+        }
+
+        .liveness-buttons-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+
+            .liveness-start-button {
+                border: 2px solid white;
+                border-radius: 18px;
+                background: black;
+                opacity: 0.6;
+                color: #ffffff;
+                font-family: "Open Sans", sans-serif;
+                font-size: 15px;
+                font-weight: 500;
+                cursor: pointer;
+                padding: 10px 20px;
+            }
+        }
+
+        .liveness-instructions-counter {
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            background: black;
+            border-radius: 6px;
+            opacity: 0.5;
+            color: white;
+            padding: 1px 3px;
+            z-index: 700;
+        }
+    }
+}

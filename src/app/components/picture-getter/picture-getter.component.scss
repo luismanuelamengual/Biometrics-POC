@@ -1,0 +1,30 @@
+video {
+    background-color: #000000;
+    width: 100%;
+    border: 2px solid black;
+}
+
+.image-container {
+    width: 100%;
+}
+
+img {
+    width: 100%;
+}
+
+canvas {
+    display: none;
+}
+
+.buttons-container {
+    margin-top: 10px;
+}
+
+button {
+    margin-right: 10px;
+    margin-bottom: 4px;
+}
+
+mat-select,mat-form-field {
+    width: 100%;
+}

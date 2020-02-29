@@ -1,0 +1,32 @@
+<div class="picture-getter">
+
+    <canvas #canvas></canvas>
+
+    <div *ngIf="pictureUrl != null" class="image-container">
+        <img [src]="pictureUrl">
+        <button *ngIf="pictureUrl != null" mat-button mat-raised-button (click)="rotateImage(90)">↻</button>
+        <button *ngIf="pictureUrl != null" mat-button mat-raised-button (click)="rotateImage(-90)">↺</button>
+    </div>
+
+    <ng-container *ngIf="pictureCaptureSupported == false">
+        <ng-container *ngIf="pictureUrl == null">
+            <video #video autoplay></video>        
+        </ng-container>
+        <div class="buttons-container">
+            <button mat-button mat-raised-button color="primary" (click)="pictureUrl == null? capture() : reset()">
+                <ng-container *ngIf="pictureUrl == null">Tomar foto</ng-container>
+                <ng-container *ngIf="pictureUrl != null">Volver a tomar la foto</ng-container>
+            </button>
+        </div>
+    </ng-container>
+    
+    <ng-container *ngIf="pictureCaptureSupported == true">
+        <input #captureInput style="display: none" type="file" (change)="onPictureCaptured($event.target.files[0])" accept="image/*" capture="camera">
+        <button mat-button mat-raised-button color="primary" (click)="captureInput.click()">
+            <ng-container *ngIf="pictureUrl == null">Tomar foto</ng-container>
+            <ng-container *ngIf="pictureUrl != null">Volver a tomar la foto</ng-container>
+        </button>
+    </ng-container>
+    
+</div>
+    

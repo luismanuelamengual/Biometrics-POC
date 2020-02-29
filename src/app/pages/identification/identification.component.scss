@@ -1,0 +1,57 @@
+mat-card {
+    app-liveness {
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: block;
+        top: 0;
+        left: 0;
+        z-index: 50000;
+    }
+
+    mat-label {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    mat-expansion-panel {
+        margin-bottom: 20px;
+
+        .table-section {
+            width: 100%;
+            overflow: auto;
+        }
+    }
+
+    .picture-container {
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+
+    .results-section {
+        .results-error {
+            font-size: 16px;
+            color: red;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .verification-result-item {
+            width: 100%;
+            font-weight: bold;
+            margin-bottom: 10px;
+
+            .verification-result-danger {
+                color: #bf4941;
+            }
+
+            .verification-result-warning {
+                color: #b5a841;
+            }
+
+            .verification-result-success {
+                color: #4f8a45
+            }
+        }
+    }
+}

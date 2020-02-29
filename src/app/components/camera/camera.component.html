@@ -1,0 +1,19 @@
+<div [ngClass]="{'camera':true, 'camera-open':opened}">
+    <div *ngIf="mode === 'canvas'" class="camera-canvas">
+        <div class="camera-video-wrapper">
+            <div class="camera-video">
+                <canvas #canvas></canvas>
+                <video #video autoplay playsinline></video>
+                <ng-content></ng-content>
+            </div>
+        </div>
+        <div class="camera-controls">
+            <button type="button" class="snapshotButton" (click)="capture()"></button>
+        </div>
+    </div>
+
+    <div *ngIf="mode === 'native'" class="camera-native">
+        <canvas #canvas></canvas>
+        <input #nativeInput style="display: none" type="file" (change)="onPictureCaptured($event.target.files[0])" accept="image/*" capture="camera">
+    </div>
+</div>

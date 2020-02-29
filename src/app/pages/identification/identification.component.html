@@ -1,0 +1,78 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Identificador de personas</mat-card-title>
+        <mat-card-subtitle>Comparación de prueba de vida vs documento</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-vertical-stepper>
+            <mat-step label="Paso 1: Prueba de vida">
+                <app-liveness *ngIf="livenessSessionRunning" (livenessCompleted)="onLivenessCompleted($event)" (livenessSessionStarted)="onLivenessSessionStarted()"></app-liveness>
+                <mat-label *ngIf="livenessPictures.length > 0">Prueba de vida tomada exitosamente<br></mat-label>
+                <button mat-button mat-raised-button color="primary" *ngIf="!livenessSessionRunning" (click)="startLivenessSession()">
+                    <ng-container *ngIf="livenessPictures.length === 0">Realizar prueba de vida</ng-container>
+                    <ng-container *ngIf="livenessPictures.length > 0">Volver a realizar prueba de vida</ng-container>
+                </button>
+            </mat-step>
+            <mat-step label="Paso 2: Fotos del documento">
+                <div class="picture-container">
+                    <mat-label><b>Foto del frente del documento</b></mat-label>
+                    <app-picture-getter (pictureCaptured)="onDocumentFrontCaptured($event)"></app-picture-getter>
+                </div>
+                <mat-divider [inset]="true"></mat-divider>
+                <div class="picture-container">
+                    <mat-label><b>Foto del dorso del documento</b></mat-label>
+                    <app-picture-getter (pictureCaptured)="onDocumentBackCaptured($event)"></app-picture-getter>
+                </div>
+            </mat-step>
+            <mat-step label="Paso 3: Verificación">
+                <div *ngIf="verificationError != null || verificationResults != null" class="results-section">
+                    <div *ngIf="verificationError != null" class="results-error">
+                        {{ verificationError }}
+                    </div>
+                    <ng-container *ngIf="!verifying && verificationResults != null">
+                        <mat-expansion-panel expanded=true>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Resultado</mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="verification-result-item">
+                                Match:&nbsp;&nbsp;
+                                <span *ngIf="verificationResults.match" class="verification-result-success">POSITIVO</span>
+                                <span *ngIf="!verificationResults.match" class="verification-result-danger">NEGATIVO</span>
+                            </div>
+                            <div *ngIf="verificationResults.similarity" class="verification-result-item">
+                                Similaridad:&nbsp;&nbsp;
+                                <span class="verification-result-success">{{ verificationResults.similarity }}</span>
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel *ngIf="verificationResults.documentData">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Datos del documento</mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="table-section">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>Campo</th>
+                                        <th>Valor</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr *ngFor="let dataItem of verificationResults.documentData | keyvalue">
+                                        <td>{{ dataItem.key }}</td>
+                                        <td>{{ dataItem.value }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </mat-expansion-panel>
+                    </ng-container>
+                </div>
+                <button mat-button mat-raised-button color="primary" (click)="verify()" [disabled]="livenessPictures.length === 0 || documentFrontPicture == null || documentBackPicture == null || verifying == true">
+                    <ng-container *ngIf="verifying == false && !verificationResults">Verificar identidad</ng-container>
+                    <ng-container *ngIf="verifying == false && verificationResults">Verificar identidad nuevamente</ng-container>
+                    <ng-container *ngIf="verifying == true">Verificando ...</ng-container>
+                </button>
+            </mat-step>
+        </mat-vertical-stepper>
+    </mat-card-content>
+</mat-card>
