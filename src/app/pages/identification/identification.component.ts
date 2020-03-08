@@ -58,17 +58,20 @@ export class IdentificationComponent {
             formData.append('documentFront', documentFrontBytes);
             formData.append('documentBack', documentBackBytes);
             try {
-                this.verificationResults = await this.http.post('/biometrics/v1/verify_identity', formData, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey }}).toPromise();
-                if (this.verificationResults.success && this.verificationResults.match) {
+                const verificationResults: any = await this.http.post('/biometrics_local/v1/verify_identity', formData, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey }}).toPromise();
+                if (verificationResults.success && verificationResults.data.match) {
+                    this.verificationResults = { match: verificationResults.data.match };
                     try {
                         const formDataDocument = new FormData();
                         formDataDocument.append('documentFront', documentFrontBytes);
                         formDataDocument.append('documentBack', documentBackBytes);
-                        const documentResults: any = await this.http.post('/biometrics/v1/scan_document_data', formDataDocument, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey}}).toPromise();
-                        if (documentResults.success && documentResults.documentData) {
-                            this.verificationResults.documentData = documentResults.documentData;
+                        const documentResults: any = await this.http.post('/biometrics_local/v1/scan_document_data', formDataDocument, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey}}).toPromise();
+                        if (documentResults.success && documentResults.data.documentData) {
+                            this.verificationResults.documentData = documentResults.data.documentData;
                         }
                     } catch (e) {}
+                } else {
+                    this.verificationResults = { match: false };
                 }
             } catch (e) {
                 this.verificationResults = { match: false };

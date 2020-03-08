@@ -17,23 +17,16 @@ import ImageUtils from '../../utils/image-utils';
 })
 export class LivenessComponent implements AfterViewInit, OnDestroy {
 
-    readonly FRONTAL_FACE_INSTRUCTION = 'frontal-face';
-    readonly LEFT_PROFILE_FACE_INSTRUCTION = 'left-profile-face';
-    readonly RIGHT_PROFILE_FACE_INSTRUCTION = 'right-profile-face';
+    readonly FRONTAL_FACE_INSTRUCTION = 'frontal_face';
+    readonly LEFT_PROFILE_FACE_INSTRUCTION = 'left_profile_face';
+    readonly RIGHT_PROFILE_FACE_INSTRUCTION = 'right_profile_face';
 
-    readonly FACE_FRONTAL_PROFILE = 'front';
-    readonly FACE_LEFT_PROFILE = 'left';
-    readonly FACE_RIGHT_PROFILE = 'right';
-    readonly FACE_ORIENTATION_INSECURE = 'insecure';
-
-    readonly FACE_MATCH_SUCCESS_STATUS_CODE = 200;
-    readonly FACE_IN_INCORRECT_ANGLE_STATUS_CODE = 201;
-    readonly FACE_NOT_FOUND_STATUS_CODE = 401;
-    readonly FACE_INSECURE_STATUS_CODE = 402;
-    readonly FACE_NOT_CENTERED_STATUS_CODE = 403;
-    readonly FACE_TOO_CLOSE_STATUS_CODE = 404;
-    readonly FACE_TOO_FAR_AWAY_STATUS_CODE = 405;
-    readonly FACE_RECOGNITION_ERROR_STATUS_CODE = 500;
+    readonly FACE_MATCH_SUCCESS_STATUS_CODE = 0;
+    readonly FACE_WITH_INCORRECT_GESTURE_STATUS_CODE = 1;
+    readonly FACE_NOT_FOUND_STATUS_CODE = -1;
+    readonly FACE_NOT_CENTERED_STATUS_CODE = -2;
+    readonly FACE_TOO_CLOSE_STATUS_CODE = -3;
+    readonly FACE_TOO_FAR_AWAY_STATUS_CODE = -4;
 
     readonly MASK_ANIMATION_MAX_FRAMES = 60;
 
@@ -293,12 +286,13 @@ export class LivenessComponent implements AfterViewInit, OnDestroy {
                 }
                 const imageUrl = canvas.toDataURL('image/jpeg', 0.7);
                 const formData = new FormData();
-                formData.append('image', ImageUtils.convertImageToBlob(imageUrl));
-                this.http.post('/biometrics/v1/detect_face', formData, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey }}).toPromise().then((response: any) => {
+                formData.append('instruction', this.livenessInstruction);
+                formData.append('selfie', ImageUtils.convertImageToBlob(imageUrl));
+                this.http.post('/biometrics_local/v1/check_liveness_instruction', formData, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey }}).toPromise().then((response: any) => {
                     if (this.livenessSessionRunning) {
-                        this.livenessStatus = this.getStatus(response);
+                        this.livenessStatus = response.data.status;
                         this.livenessStatusMessage = this.getStatusMessage(this.livenessStatus);
-                        if (!this.livenessDebugMode && this.livenessStatus !== this.FACE_MATCH_SUCCESS_STATUS_CODE && this.livenessStatus !== this.FACE_IN_INCORRECT_ANGLE_STATUS_CODE) {
+                        if (!this.livenessDebugMode && this.livenessStatus < this.FACE_MATCH_SUCCESS_STATUS_CODE) {
                             this.livenessInstructionsRemaining = this.livenessMaxInstructions;
                             this.livenessPictures = [];
                             if (this.livenessInstruction !== this.FRONTAL_FACE_INSTRUCTION) {
@@ -334,70 +328,6 @@ export class LivenessComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-    getStatus(faceDetectionResults: any) {
-        try {
-            if (faceDetectionResults.face) {
-                const canvas = this.livenessCanvasElement.nativeElement;
-                const faceBoundingBox = faceDetectionResults.face.boundingBox;
-                const faceProfile = faceDetectionResults.face.profile;
-                const imageWidth = canvas.width;
-                const imageHeight = canvas.height;
-                const imageMiddleX = imageWidth / 2;
-                const imageMiddleY = imageHeight / 2;
-                let faceMiddleX = faceBoundingBox.left + (faceBoundingBox.width / 2);
-                const faceMiddleY = faceBoundingBox.top + (faceBoundingBox.height / 2);
-                if (faceProfile === this.FACE_LEFT_PROFILE) {
-                    faceMiddleX -= (faceBoundingBox.width * 10.0) / 100.0;
-                } else if (faceProfile === this.FACE_RIGHT_PROFILE) {
-                    faceMiddleX += (faceBoundingBox.width * 10.0) / 100.0;
-                }
-                const xDifferential = Math.abs(imageMiddleX - faceMiddleX);
-                const yDifferential = Math.abs(imageMiddleY - faceMiddleY);
-                const faceAspectRatio = 0.5;
-                const imageAspectRatio = imageWidth / imageHeight;
-                let xDifferentialLimit = 0.0;
-                let yDifferentialLimit = 0.0;
-                if (imageAspectRatio > faceAspectRatio) {
-                    xDifferentialLimit = imageHeight / 4;
-                    yDifferentialLimit = imageHeight / 4;
-                } else {
-                    xDifferentialLimit = imageWidth / 4;
-                    yDifferentialLimit = imageWidth / 4;
-                }
-
-                if (xDifferential > xDifferentialLimit) {
-                    return this.FACE_NOT_CENTERED_STATUS_CODE;
-                }
-                if (yDifferential > yDifferentialLimit) {
-                    return this.FACE_NOT_CENTERED_STATUS_CODE;
-                }
-
-                switch (this.livenessInstruction) {
-                    case this.FRONTAL_FACE_INSTRUCTION:
-                        if (faceProfile !== this.FACE_FRONTAL_PROFILE) {
-                            return this.FACE_IN_INCORRECT_ANGLE_STATUS_CODE;
-                        }
-                        break;
-                    case this.LEFT_PROFILE_FACE_INSTRUCTION:
-                        if (faceProfile !== this.FACE_LEFT_PROFILE) {
-                            return this.FACE_IN_INCORRECT_ANGLE_STATUS_CODE;
-                        }
-                        break;
-                    case this.RIGHT_PROFILE_FACE_INSTRUCTION:
-                        if (faceProfile !== this.FACE_RIGHT_PROFILE) {
-                            return this.FACE_IN_INCORRECT_ANGLE_STATUS_CODE;
-                        }
-                        break;
-                }
-                return this.FACE_MATCH_SUCCESS_STATUS_CODE;
-            } else {
-                return this.FACE_NOT_FOUND_STATUS_CODE;
-            }
-        } catch (e) {
-            return this.FACE_RECOGNITION_ERROR_STATUS_CODE;
-        }
-    }
-
     getPicture(maxWidth: number, maxHeight: number) {
         const livenessPictureCanvas = this.livenessPictureCanvasElement.nativeElement;
         const video = this.livenessVideoElement.nativeElement;
@@ -419,9 +349,6 @@ export class LivenessComponent implements AfterViewInit, OnDestroy {
             case this.FACE_NOT_FOUND_STATUS_CODE:
                 message = 'Rostro no encontrado';
                 break;
-            case this.FACE_INSECURE_STATUS_CODE:
-                message = 'Rostro no confiable. Posicionece en un lugar con fondo liso';
-                break;
             case this.FACE_NOT_CENTERED_STATUS_CODE:
                 message = 'Rostro no centrado';
                 break;
@@ -431,11 +358,8 @@ export class LivenessComponent implements AfterViewInit, OnDestroy {
             case this.FACE_TOO_FAR_AWAY_STATUS_CODE:
                 message = 'Rostro demasiado lejos. Acerque su rostro';
                 break;
-            case this.FACE_IN_INCORRECT_ANGLE_STATUS_CODE:
+            case this.FACE_WITH_INCORRECT_GESTURE_STATUS_CODE:
                 message = 'Posiciones su nariz para que coincida con el punto rojo';
-                break;
-            case this.FACE_RECOGNITION_ERROR_STATUS_CODE:
-                message = 'Error en la detección del rostro';
                 break;
         }
         return message;

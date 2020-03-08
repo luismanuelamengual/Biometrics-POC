@@ -4,10 +4,10 @@
     <video #livenessVideo [ngClass]="{'liveness-video': true}" autoplay playsinline></video>
     <div #livenessVideoOverlay class="liveness-video-overlay">
         <div class="liveness-video-overlay-content">
-            <div #livenessPointAnimation [ngClass]="{'liveness-point-animation': true, 'liveness-hidden': livenessMode=='mask' || !livenessSessionRunning, 'liveness-point-animation-left': livenessInstruction == 'left-profile-face', 'liveness-point-animation-right': livenessInstruction == 'right-profile-face'}"></div>
-            <div #livenessMaskAnimation [ngClass]="{'liveness-mask-animation': true, 'liveness-hidden': livenessMode=='point' || !livenessSessionRunning || livenessStatus >= 300}"></div>
+            <div #livenessPointAnimation [ngClass]="{'liveness-point-animation': true, 'liveness-hidden': livenessMode=='mask' || !livenessSessionRunning, 'liveness-point-animation-left': livenessInstruction == 'left_profile_face', 'liveness-point-animation-right': livenessInstruction == 'right_profile_face'}"></div>
+            <div #livenessMaskAnimation [ngClass]="{'liveness-mask-animation': true, 'liveness-hidden': livenessMode=='point' || !livenessSessionRunning || livenessStatus < 0}"></div>
             <ng-container *ngIf="livenessSessionRunning">
-                <app-liveness-marquee [ngClass]="{'liveness-hidden': livenessMode=='mask' && livenessStatus < 400}" [active]="livenessStatus < 400"></app-liveness-marquee>
+                <app-liveness-marquee [ngClass]="{'liveness-hidden': livenessMode=='mask' && livenessStatus >= 0}"></app-liveness-marquee>
             </ng-container>
         </div>
     </div>
