@@ -66,8 +66,8 @@ export class IdentificationComponent {
                         formDataDocument.append('documentFront', documentFrontBytes);
                         formDataDocument.append('documentBack', documentBackBytes);
                         const documentResults: any = await this.http.post('/biometrics_local/v1/scan_document_data', formDataDocument, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey}}).toPromise();
-                        if (documentResults.success && documentResults.data.documentData) {
-                            this.verificationResults.documentData = documentResults.data.documentData;
+                        if (documentResults.success && documentResults.data.information) {
+                            this.verificationResults.documentData = documentResults.data.information;
                         }
                     } catch (e) {}
                 } else {
