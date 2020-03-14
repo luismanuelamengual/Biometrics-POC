@@ -58,14 +58,14 @@ export class IdentificationComponent {
             formData.append('documentFront', documentFrontBytes);
             formData.append('documentBack', documentBackBytes);
             try {
-                const verificationResults: any = await this.http.post('/biometrics_local/v1/verify_identity', formData, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey }}).toPromise();
+                const verificationResults: any = await this.http.post('/biometrics/v1/verify_identity', formData).toPromise();
                 if (verificationResults.success && verificationResults.data.match) {
                     this.verificationResults = { match: verificationResults.data.match, similarity: verificationResults.data.similarity };
                     try {
                         const formDataDocument = new FormData();
                         formDataDocument.append('documentFront', documentFrontBytes);
                         formDataDocument.append('documentBack', documentBackBytes);
-                        const documentResults: any = await this.http.post('/biometrics_local/v1/scan_document_data', formDataDocument, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey}}).toPromise();
+                        const documentResults: any = await this.http.post('/biometrics/v1/scan_document_data', formDataDocument).toPromise();
                         if (documentResults.success && documentResults.data.information) {
                             this.verificationResults.documentData = documentResults.data.information;
                         }

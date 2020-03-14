@@ -288,7 +288,7 @@ export class LivenessComponent implements AfterViewInit, OnDestroy {
                 const formData = new FormData();
                 formData.append('instruction', this.livenessInstruction);
                 formData.append('selfie', ImageUtils.convertImageToBlob(imageUrl));
-                this.http.post('/biometrics_local/v1/check_liveness_instruction', formData, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey }}).toPromise().then((response: any) => {
+                this.http.post('/biometrics/v1/check_liveness_instruction', formData).toPromise().then((response: any) => {
                     if (this.livenessSessionRunning) {
                         this.livenessStatus = response.data.status;
                         this.livenessStatusMessage = this.getStatusMessage(this.livenessStatus);
