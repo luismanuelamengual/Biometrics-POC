@@ -60,7 +60,7 @@ export class IdentificationComponent {
             try {
                 const verificationResults: any = await this.http.post('/biometrics_local/v1/verify_identity', formData, {headers: {Authorization: 'Bearer ' + environment.biometricsApiKey }}).toPromise();
                 if (verificationResults.success && verificationResults.data.match) {
-                    this.verificationResults = { match: verificationResults.data.match };
+                    this.verificationResults = { match: verificationResults.data.match, similarity: verificationResults.data.similarity };
                     try {
                         const formDataDocument = new FormData();
                         formDataDocument.append('documentFront', documentFrontBytes);
